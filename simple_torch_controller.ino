@@ -15,6 +15,12 @@
 #define UP 133
 #define RIGHT 10
 
+/*
+PINOUTS:
+128x32 I2C OLED: uses SDA/SCL, and pin 4 for reset
+LCD/Button panel: doesn't use the LCD.  Just uses A0, 5V, GND on Uno and breakout for detecting buttons
+*/
+
 Adafruit_SSD1306 display(OLED_RESET);
 void setup()   {                
   Serial.begin(9600);
