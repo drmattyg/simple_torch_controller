@@ -22,6 +22,10 @@ LCD/Button panel: doesn't use the LCD.  Just uses A0, 5V, GND on Uno and breakou
 */
 
 Adafruit_SSD1306 display(OLED_RESET);
+int speed = 0;
+int currKey = NONE;
+char displayOutput[50];
+
 void setup()   {                
   Serial.begin(9600);
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);  // initialize with the I2C addr 0x3C (for the 128x32)
@@ -29,9 +33,9 @@ void setup()   {
   display.setTextSize(1);
   display.setTextColor(WHITE);
   display.setCursor(0,0);
-  display.println("Torch Song");
+  display.println("Torch Song\r\nv0.1");
   display.display();
-  delay(200);
+  delay(500);
 
 }
 
@@ -46,36 +50,51 @@ int getKey() {
 	
 }
 
+void speedUp() {
+	speed = speed + 10;
+	if(speed > 255) speed = 255;
+	analogWrite(3, speed);
+}
+
+void speedDown() {
+	speed = speed - 10;
+	if(speed < 0) speed = 0;
+	analogWrite(3, speed);
+}
+
 void loop() {
-	char* keyName;
-	switch(getKey()) {
-		case NONE:  
-			keyName = "None";
+
+	int keyPressed = getKey();
+	switch(keyPressed) {
+		// case NONE:  
+		// 	keyName = "None";
+		// 	break;
+		// case SELECT: 
+		// 	keyName = "Select";
+		// 	break;
+		// case LEFT: 
+		// 	keyName = "Left";
+		// 	break;
+		case DOWN: {
+			speedDown();
+			delay(100);
 			break;
-		case SELECT: 
-			keyName = "Select";
+		}
+		// case RIGHT: 
+		// 	keyName = "Right";
+		// 	break;
+		case UP: {
+			speedUp();
+			delay(100);
 			break;
-		case LEFT: 
-			keyName = "Left";
-			break;
-		case DOWN: 
-			keyName = "Down";
-			break;
-		case RIGHT: 
-			keyName = "Right";
-			break;
-		case UP: 
-			keyName = "Up";
-			break;
+		}
 		default:
-			"wat";
 			break;
 	}
 	display.clearDisplay();
-	display.setCursor(0, 0);
-	display.println(keyName);
-	display.setCursor(0, 16);
-	display.println(getKey());
+	display.setCursor(0,0);
+	sprintf(displayOutput, "Speed: %d\nKeypressed: %d", speed, keyPressed);
+	display.print(displayOutput);
 	display.display();
   
 }
